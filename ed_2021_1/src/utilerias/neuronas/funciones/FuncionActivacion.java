@@ -1,4 +1,4 @@
-package utilerias.neuronas;
+package utilerias.neuronas.funciones;
 
 import ednolineal.Matriz2DNumerica;
 
@@ -10,5 +10,5 @@ public interface FuncionActivacion {
 
     Matriz2DNumerica funcionActivadora(Matriz2DNumerica variableIndependiente);
 
-    Matriz2DNumerica funcionDerivada(Matriz2DNumerica sumatoria);
+    Matriz2DNumerica funcionDerivada(Matriz2DNumerica variableIndependiente);
 }
