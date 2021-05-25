@@ -9,6 +9,8 @@ import utilerias.neuronas.funciones.FuncionLineal;
 import utilerias.neuronas.funciones.FuncionLogSigmoid;
 import java.lang.Math;
 
+import edlineal.ArregloNumerico;
+
 /**
 * PruebaRedNeuronal
 */
@@ -38,11 +40,20 @@ public class PruebaRedNeuronal {
 		red.agregarCapa(1, funcionLineal, w2, b2);
 
 		Matriz2DNumerica entradaInicial = new Matriz2DNumerica(1, 1, 1.0);
-
 		Matriz2DNumerica salidaEsperada = new Matriz2DNumerica(1, 1);
 		double gradoAprendizaje = 0.1;
+
+		for (int i = 0; i < 500000; i++) {
+			double input = Math.random()*4.0-2.0;
+			double valorEsperado = 1 + Math.sin((Math.PI / 4) * input);
+			entradaInicial.cambiarInfo(0, 0, input);
+			salidaEsperada.cambiarInfo(0, 0, valorEsperado);
+			red.entrenar(entradaInicial, salidaEsperada, gradoAprendizaje);
+		}
 		double valorEsperado = 1 + Math.sin((Math.PI / 4) * 1.0);
-		salidaEsperada.cambiarInfo(0, 0, valorEsperado);
-		red.entrenar(entradaInicial, salidaEsperada, gradoAprendizaje);
+		entradaInicial.cambiarInfo(0, 0, 1.0);
+		SalidaEstandar.consola("Valor correcto: " + valorEsperado + "\n");
+		SalidaEstandar.consola("Valor obtenido\n");
+		red.realizarForward(entradaInicial).imprimirR();
 	}
 }

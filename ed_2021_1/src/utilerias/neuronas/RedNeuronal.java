@@ -1,5 +1,6 @@
 package utilerias.neuronas;
 
+import edlineal.ColaLista;
 import edlineal.ListaDobleLigada;
 import ednolineal.Matriz2DNumerica;
 import entradasalida.SalidaEstandar;
@@ -53,45 +54,62 @@ public class RedNeuronal {
 
 		public void entrenar(Matriz2DNumerica entradaInicial, Matriz2DNumerica salidaEsperada, double gradoAprendizaje) {
 			Matriz2DNumerica salidaObtenida = realizarForward(entradaInicial);
-			realizarBackward(salidaObtenida, salidaEsperada, gradoAprendizaje);
+			realizarBackward(salidaObtenida, salidaEsperada, gradoAprendizaje, entradaInicial);
 		}
 
-    private void realizarBackward(Matriz2DNumerica salidaObtenida, Matriz2DNumerica salidaEsperada, double gradoAprendizaje){
+    private void realizarBackward(Matriz2DNumerica salidaObtenida, Matriz2DNumerica salidaEsperada, double gradoAprendizaje, Matriz2DNumerica entradaInicial){
         capas.inicializarIteradorDer();
+				ColaLista colaSensitividades = new ColaLista();
         Matriz2DNumerica sensitividadIterativa = calcularSensitivadadInicial(salidaObtenida,salidaEsperada);
+				colaSensitividades.poner(sensitividadIterativa);
         CapaNeuronas capaActual = (CapaNeuronas) capas.obtenerSiguienteDer();
-        capaActual.actualizarPesos(sensitividadIterativa,gradoAprendizaje);
-        capaActual.actualizarBias(sensitividadIterativa,gradoAprendizaje);
-        CapaNeuronas capaAnterior;
+				CapaNeuronas capaAnterior;
+        CapaNeuronas capaSiguiente;
         while(capas.hayMasDer()){
-            capaAnterior = capaActual;
+            capaSiguiente = capaActual;
             capaActual = (CapaNeuronas) capas.obtenerSiguienteDer();
 
-            sensitividadIterativa = calcularSensitivadad(capaActual,capaAnterior,sensitividadIterativa);
+            sensitividadIterativa = calcularSensitivadad(capaActual,capaSiguiente,sensitividadIterativa);
+						colaSensitividades.poner(sensitividadIterativa);
+        }
 
-            capaActual.actualizarPesos(sensitividadIterativa,gradoAprendizaje);
+				capas.inicializarIteradorDer();
+
+        while(capas.hayMasDer()){
+            capaActual = (CapaNeuronas) capas.obtenerSiguienteDer();
+						capaAnterior = (CapaNeuronas) capas.obtenerIteradorDer();
+						sensitividadIterativa = (Matriz2DNumerica) colaSensitividades.quitar();
+
+						if (capaAnterior == null) {
+							capaActual.actualizarPesos(sensitividadIterativa,gradoAprendizaje, entradaInicial);
+						} else {
+							capaActual.actualizarPesos(sensitividadIterativa,gradoAprendizaje, capaAnterior.calcularSalida());
+						}
             capaActual.actualizarBias(sensitividadIterativa,gradoAprendizaje);
         }
     }
 
     private Matriz2DNumerica calcularSensitivadad(CapaNeuronas capaActual, CapaNeuronas capaSiguiente, Matriz2DNumerica sensitividadSiguiente) {
-        Matriz2DNumerica sensitividad = capaActual.funcionActivacion.funcionDerivada(capaActual.sumatoria);
-        sensitividad = sensitividad.multiplicarMatriz(capaSiguiente.pesos);
+        Matriz2DNumerica sensitividad = capaActual.funcionActivacion.funcionDerivada(capaActual.getSumatoria());
+				Matriz2DNumerica transpuesta = capaSiguiente.getPesos().clonar();
+				transpuesta.aplicarTranspuesta();
+        sensitividad = sensitividad.multiplicarMatriz(transpuesta);
         sensitividad = sensitividad.multiplicarMatriz(sensitividadSiguiente);
         return sensitividad;
     }
 
     private Matriz2DNumerica calcularSensitivadadInicial(Matriz2DNumerica salidaObtenida, Matriz2DNumerica salidaEsperada) {
         CapaNeuronas ultimaCapa = (CapaNeuronas) capas.getUltimo();
-        Matriz2DNumerica sensitividad = ultimaCapa.funcionActivacion.funcionDerivada(ultimaCapa.sumatoria);
+        Matriz2DNumerica sensitividad = ultimaCapa.funcionActivacion.funcionDerivada(ultimaCapa.getSumatoria());
         sensitividad.porEscalar(-2);
         sensitividad = sensitividad.multiplicarMatriz(calcularError(salidaObtenida,salidaEsperada));
         return sensitividad;
     }
 
     private Matriz2DNumerica calcularError(Matriz2DNumerica salidaObtenida, Matriz2DNumerica salidaEsperada){
+				Matriz2DNumerica auxiliarSalidaEsperada = salidaEsperada.clonar();
         salidaObtenida.porEscalar(-1);
-        salidaEsperada.sumarMatriz(salidaObtenida);
-        return salidaEsperada;
+        auxiliarSalidaEsperada.sumarMatriz(salidaObtenida);
+        return auxiliarSalidaEsperada;
     }
 }

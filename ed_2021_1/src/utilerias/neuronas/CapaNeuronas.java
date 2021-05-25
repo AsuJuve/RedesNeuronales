@@ -23,6 +23,18 @@ public class CapaNeuronas {
 		rellenarValoresAleatorios();
 	}
 
+	public Matriz2DNumerica getSumatoria() {
+			return sumatoria;
+	}
+
+	public Matriz2DNumerica getPesos() {
+			return pesos;
+	}
+
+	public Matriz2DNumerica getBias() {
+			return bias;
+	}
+
 	public int obtenerNumeroNeuronas() {
 		return pesos.renglones();
 	}
@@ -32,7 +44,7 @@ public class CapaNeuronas {
 		sumatoria.sumarMatriz(bias);
 	}
 
-	private Matriz2DNumerica calcularSalida() {
+	public Matriz2DNumerica calcularSalida() {
 		return funcionActivacion.funcionActivadora(sumatoria);
 	}
 
@@ -55,11 +67,11 @@ public class CapaNeuronas {
 		}
 	}
 
-	public void actualizarPesos(Matriz2DNumerica sensitividad, double gradoAprendizaje) {
+	public void actualizarPesos(Matriz2DNumerica sensitividad, double gradoAprendizaje, Matriz2DNumerica salidaCapaAnterior) {
 		Matriz2DNumerica auxiliarSensitividad = sensitividad.clonar();
-		Matriz2DNumerica salidaTranspuesta = calcularSalida();
-		salidaTranspuesta.aplicarTranspuesta();
-		auxiliarSensitividad.multiplicarMatriz(salidaTranspuesta);
+		Matriz2DNumerica auxilarSalida = salidaCapaAnterior.clonar();
+		auxilarSalida.aplicarTranspuesta();
+		auxiliarSensitividad = auxiliarSensitividad.multiplicarMatriz(auxilarSalida);
 		auxiliarSensitividad.porEscalar(gradoAprendizaje);
 		auxiliarSensitividad.porEscalar(-1);
 		pesos.sumarMatriz(auxiliarSensitividad);
