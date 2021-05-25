@@ -2,7 +2,8 @@ package interfaces;
 
 import edlineal.ListaLigada;
 import ednolineal.Matriz2DNumerica;
-import graficacion.GraficaLineaXY;
+import entradasalida.SalidaEstandar;
+import graficas.GraficaLineaXY;
 import utilerias.neuronas.RedNeuronal;
 import utilerias.neuronas.funciones.FuncionActivacion;
 import utilerias.neuronas.funciones.FuncionLineal;
@@ -33,7 +34,7 @@ public class PruebaRedNeuronal {
 		ListaLigada ejeXRed = new ListaLigada();
 		ListaLigada ejeYRed = new ListaLigada();
 
-		for (int i = 0; i < 500000; i++) {
+		for (int i = 0; i < 5000; i++) {
 			double input = Math.random()*4.0-2.0;
 			double valorEsperado = 1 + Math.sin((Math.PI / 4) * input);
 			entradaInicial.cambiarInfo(0, 0, input);
@@ -42,7 +43,7 @@ public class PruebaRedNeuronal {
 			ejeYFuncion.agregar(valorEsperado);
 			ejeXRed.agregar(input);
 			Matriz2DNumerica resultadoRed = red.entrenar(entradaInicial, salidaEsperada, gradoAprendizaje);
-			ejeYRed.agregar(resultadoRed.obtenerInfo(0,0));
+			ejeYRed.agregar(((double)resultadoRed.obtenerInfo(0,0)));
 		}
 
 		ListaLigada paresXY = new ListaLigada();

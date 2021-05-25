@@ -107,9 +107,10 @@ public class RedNeuronal {
     }
 
     private Matriz2DNumerica calcularError(Matriz2DNumerica salidaObtenida, Matriz2DNumerica salidaEsperada){
-				Matriz2DNumerica auxiliarSalidaEsperada = salidaEsperada.clonar();
-        salidaObtenida.porEscalar(-1);
-        auxiliarSalidaEsperada.sumarMatriz(salidaObtenida);
+		Matriz2DNumerica auxiliarSalidaEsperada = salidaEsperada.clonar();
+		Matriz2DNumerica auxiliarSalidaObtenida = salidaObtenida.clonar();
+        auxiliarSalidaObtenida.porEscalar(-1);
+        auxiliarSalidaEsperada.sumarMatriz(auxiliarSalidaObtenida);
         return auxiliarSalidaEsperada;
     }
 }
