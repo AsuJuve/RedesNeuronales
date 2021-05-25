@@ -3,7 +3,6 @@ package utilerias.neuronas;
 import edlineal.ColaLista;
 import edlineal.ListaDobleLigada;
 import ednolineal.Matriz2DNumerica;
-import entradasalida.SalidaEstandar;
 import utilerias.neuronas.funciones.FuncionActivacion;
 
 /**
@@ -52,10 +51,11 @@ public class RedNeuronal {
         return entradaIterativa;
     }
 
-		public void entrenar(Matriz2DNumerica entradaInicial, Matriz2DNumerica salidaEsperada, double gradoAprendizaje) {
-			Matriz2DNumerica salidaObtenida = realizarForward(entradaInicial);
-			realizarBackward(salidaObtenida, salidaEsperada, gradoAprendizaje, entradaInicial);
-		}
+    public Matriz2DNumerica entrenar(Matriz2DNumerica entradaInicial, Matriz2DNumerica salidaEsperada, double gradoAprendizaje) {
+        Matriz2DNumerica salidaObtenida = realizarForward(entradaInicial);
+        realizarBackward(salidaObtenida, salidaEsperada, gradoAprendizaje, entradaInicial);
+        return salidaObtenida;
+    }
 
     private void realizarBackward(Matriz2DNumerica salidaObtenida, Matriz2DNumerica salidaEsperada, double gradoAprendizaje, Matriz2DNumerica entradaInicial){
         capas.inicializarIteradorDer();
@@ -91,8 +91,8 @@ public class RedNeuronal {
 
     private Matriz2DNumerica calcularSensitivadad(CapaNeuronas capaActual, CapaNeuronas capaSiguiente, Matriz2DNumerica sensitividadSiguiente) {
         Matriz2DNumerica sensitividad = capaActual.funcionActivacion.funcionDerivada(capaActual.getSumatoria());
-				Matriz2DNumerica transpuesta = capaSiguiente.getPesos().clonar();
-				transpuesta.aplicarTranspuesta();
+        Matriz2DNumerica transpuesta = capaSiguiente.getPesos().clonar();
+        transpuesta.aplicarTranspuesta();
         sensitividad = sensitividad.multiplicarMatriz(transpuesta);
         sensitividad = sensitividad.multiplicarMatriz(sensitividadSiguiente);
         return sensitividad;
