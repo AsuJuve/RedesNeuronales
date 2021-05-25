@@ -39,10 +39,17 @@ public class PruebaRedNeuronal {
 			double valorEsperado = 1 + Math.sin((Math.PI / 4) * input);
 			entradaInicial.cambiarInfo(0, 0, input);
 			salidaEsperada.cambiarInfo(0, 0, valorEsperado);
+			red.entrenar(entradaInicial, salidaEsperada, gradoAprendizaje);
+		}
+
+		for (int i = 0; i < 5000; i++) {
+			double input = Math.random()*4.0-2.0;
+			double valorEsperado = 1 + Math.sin((Math.PI / 4) * input);
+			entradaInicial.cambiarInfo(0, 0, input);
 			ejeXFuncion.agregar(input);
 			ejeYFuncion.agregar(valorEsperado);
 			ejeXRed.agregar(input);
-			Matriz2DNumerica resultadoRed = red.entrenar(entradaInicial, salidaEsperada, gradoAprendizaje);
+			Matriz2DNumerica resultadoRed = red.realizarForward(entradaInicial);
 			ejeYRed.agregar(((double)resultadoRed.obtenerInfo(0,0)));
 		}
 
@@ -52,7 +59,11 @@ public class PruebaRedNeuronal {
 		paresXY.agregar(ejeXRed);
 		paresXY.agregar(ejeYRed);
 
+		ListaLigada keys = new ListaLigada();
+		keys.agregar("Funcion original");
+		keys.agregar("Funcion red neuronal");
+
 		GraficaLineaXY graficaLinea=new GraficaLineaXY();
-		graficaLinea.init(paresXY,"Ejemplo Redes Neuronales","Dato insertado","Resultado");
+		graficaLinea.init(paresXY, keys,"Ejemplo Redes Neuronales","Dato insertado","Resultado");
 	}
 }
