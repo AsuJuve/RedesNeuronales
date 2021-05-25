@@ -2,6 +2,8 @@ package utilerias.neuronas;
 
 import edlineal.ListaDobleLigada;
 import ednolineal.Matriz2DNumerica;
+import entradasalida.SalidaEstandar;
+import utilerias.neuronas.funciones.FuncionActivacion;
 
 /**
  * Conjunto de capas que continen neuronas para generar predicciones y clasificaciones
@@ -11,10 +13,22 @@ public class RedNeuronal {
     protected ListaDobleLigada capas;
     protected int numEntradas;
 
+		public RedNeuronal(int numEntradas) {
+			this.numEntradas = numEntradas;
+			capas = new ListaDobleLigada();
+		}
+
     public void agregarCapa(int numNeuronas, FuncionActivacion funcionActivacion){
         int numEntradasNuevaCapa = entradasNuevaCapa();
         CapaNeuronas capaNueva = new CapaNeuronas(numEntradasNuevaCapa,numNeuronas, funcionActivacion);
         capas.agregar(capaNueva);
+    }
+
+    public void agregarCapa(int numNeuronas, FuncionActivacion funcionActivacion, Matriz2DNumerica pesos, Matriz2DNumerica bias){
+			agregarCapa(numNeuronas, funcionActivacion);
+			CapaNeuronas agregada = (CapaNeuronas) capas.getUltimo();
+			agregada.setPesos(pesos);
+			agregada.setBias(bias);
     }
 
     private int entradasNuevaCapa() {
@@ -37,6 +51,11 @@ public class RedNeuronal {
         return entradaIterativa;
     }
 
+		public void entrenar(Matriz2DNumerica entradaInicial, Matriz2DNumerica salidaEsperada, double gradoAprendizaje) {
+			Matriz2DNumerica salidaObtenida = realizarForward(entradaInicial);
+			realizarBackward(salidaObtenida, salidaEsperada, gradoAprendizaje);
+		}
+
     private void realizarBackward(Matriz2DNumerica salidaObtenida, Matriz2DNumerica salidaEsperada, double gradoAprendizaje){
         capas.inicializarIteradorDer();
         Matriz2DNumerica sensitividadIterativa = calcularSensitivadadInicial(salidaObtenida,salidaEsperada);
@@ -57,8 +76,8 @@ public class RedNeuronal {
 
     private Matriz2DNumerica calcularSensitivadad(CapaNeuronas capaActual, CapaNeuronas capaSiguiente, Matriz2DNumerica sensitividadSiguiente) {
         Matriz2DNumerica sensitividad = capaActual.funcionActivacion.funcionDerivada(capaActual.sumatoria);
-        sensitividad.multiplicarMatriz(capaSiguiente.pesos);
-        sensitividad.multiplicarMatriz(sensitividadSiguiente);
+        sensitividad = sensitividad.multiplicarMatriz(capaSiguiente.pesos);
+        sensitividad = sensitividad.multiplicarMatriz(sensitividadSiguiente);
         return sensitividad;
     }
 
@@ -66,7 +85,7 @@ public class RedNeuronal {
         CapaNeuronas ultimaCapa = (CapaNeuronas) capas.getUltimo();
         Matriz2DNumerica sensitividad = ultimaCapa.funcionActivacion.funcionDerivada(ultimaCapa.sumatoria);
         sensitividad.porEscalar(-2);
-        sensitividad.multiplicarMatriz(calcularError(salidaObtenida,salidaEsperada));
+        sensitividad = sensitividad.multiplicarMatriz(calcularError(salidaObtenida,salidaEsperada));
         return sensitividad;
     }
 

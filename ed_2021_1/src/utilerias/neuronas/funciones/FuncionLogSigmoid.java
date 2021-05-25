@@ -6,7 +6,7 @@ import java.lang.Math;
 /**
  * FuncionLogSigmoid
  */
-public class FuncionLogSigmoid {
+public class FuncionLogSigmoid implements FuncionActivacion {
 
 	public Matriz2DNumerica funcionActivadora(Matriz2DNumerica variableIndependiente) {
 		Matriz2DNumerica resultado = variableIndependiente.clonar();
@@ -28,13 +28,13 @@ public class FuncionLogSigmoid {
 	}
 
 	public Matriz2DNumerica funcionDerivada(Matriz2DNumerica variableIndependiente) {
-		Matriz2DNumerica resultado = variableIndependiente.clonar();
+		Matriz2DNumerica resultado = new Matriz2DNumerica(variableIndependiente.renglones(), variableIndependiente.renglones(), 0.0);
 
-		for (int renglon = 0; renglon < resultado.renglones(); renglon++) {
-			for (int columna = 0; columna < resultado.columnas(); columna++) {
-				double valorActual = (double) resultado.obtenerInfo(renglon, columna);
+		for (int renglon = 0; renglon < variableIndependiente.renglones(); renglon++) {
+			for (int columna = 0; columna < variableIndependiente.columnas(); columna++) {
+				double valorActual = (double) variableIndependiente.obtenerInfo(renglon, columna);
 				double nuevoValor = (1 - logSigmoid(valorActual))*(logSigmoid(valorActual));
-				resultado.cambiarInfo(renglon, columna, nuevoValor);
+				resultado.cambiarInfo(renglon, renglon, nuevoValor);
 			}
 		}
 
