@@ -1,5 +1,7 @@
 package registros.clima;
 
+import utilerias.tiempo.Fecha;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,21 +25,28 @@ public class InterfazPrediccionClima extends JFrame {
 		BorderLayout lyt = new BorderLayout(2, 2);
 		setLayout(lyt);
 
-		lblTitulo = new JLabel("Prediccion del clima", JLabel.CENTER);
-		add(lblTitulo, BorderLayout.PAGE_START);
-
 		GridLayout lytLeft = new GridLayout(3,1);
 		pnlLeft = new JPanel();
 		pnlLeft.setLayout(lytLeft);
 
-		lblCalcularPrediccionTitulo = new JLabel("Calcular prediccion", JLabel.CENTER);
-		spDiaPrediccion = new JSpinner();
+		lblCalcularPrediccionTitulo = new JLabel("Calcular predicción", JLabel.CENTER);
+		SpinnerModel limitesSpinner = new SpinnerNumberModel(1, 1, 365, 1);
+		spDiaPrediccion = new JSpinner(limitesSpinner);
+
 		btnCalcularPrediccion = new JButton("Calcular");
 		btnCalcularPrediccion.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent actionEvent) {
-				double precipitacion = adminClima.calcularPrediccion((Integer) spDiaPrediccion.getValue());
-				String mensaje = "La precipitación para ese día es de "+precipitacion;
+				int dia = (Integer) spDiaPrediccion.getValue();
+				double octa = adminClima.obtenerOcta(dia);
+				double precipitacion = adminClima.calcularPrecipitacion(dia);
+				String fecha = Fecha.obtenerFechaPorNumero(dia);
+				String tipoPrecipitacion = adminClima.obtenerTipoPrecipitacion(precipitacion);
+
+				String mensaje = "Para el día "+fecha+" del año 2021 se tiene una nubosidad de "+octa+" octas, y por \n" +
+								"ende una tentativa tasa de lluvia de "+precipitacion+" mm/h de lluvia, quiere decir que\n" +
+								" ese día del año el tipo de precipitación es "+tipoPrecipitacion+".";
+
 				JOptionPane.showMessageDialog(null,mensaje);
 			}
 		});
@@ -48,7 +57,7 @@ public class InterfazPrediccionClima extends JFrame {
 		pnlDia = new JPanel();
 		pnlDia.setLayout(lytDia);
 
-		lblCalcularPrediccion = new JLabel("Dia");
+		lblCalcularPrediccion = new JLabel("Día");
 
 		pnlDia.add(lblCalcularPrediccion);
 		pnlDia.add(spDiaPrediccion);
@@ -59,8 +68,8 @@ public class InterfazPrediccionClima extends JFrame {
 		pnlRight = new JPanel();
 		pnlRight.setLayout(lytLeft);
 
-		btnMostrarGrafica = new JButton("Mostrar grafica");
-		lblMostrarGrafica = new JLabel("Grafica", JLabel.CENTER);
+		btnMostrarGrafica = new JButton("Mostrar gráfica");
+		lblMostrarGrafica = new JLabel("Gráfica", JLabel.CENTER);
 		btnMostrarGrafica.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -81,19 +90,17 @@ public class InterfazPrediccionClima extends JFrame {
 		setSize(300,300);
 		setVisible(true);
 	}
-
-	JLabel lblTitulo;
-
 	JPanel pnlPrincipal;
 	JPanel pnlLeft;
 	JPanel pnlRight;
 	JPanel pnlDia;
 
-	JButton btnMostrarGrafica;
 	JLabel lblMostrarGrafica;
-
-	JButton btnCalcularPrediccion;
-	JSpinner spDiaPrediccion;
 	JLabel lblCalcularPrediccion;
 	JLabel lblCalcularPrediccionTitulo;
+
+	JButton btnMostrarGrafica;
+	JButton btnCalcularPrediccion;
+
+	JSpinner spDiaPrediccion;
 }
