@@ -1,16 +1,19 @@
 package registros.clima;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
 * InterfazPrediccionClima
 */
 public class InterfazPrediccionClima extends JFrame {
+	private AdministracionClima adminClima;
+
+	public void generarPrediccion(){
+		adminClima = new AdministracionClima();
+	}
 
 	public void init() {
 		pnlPrincipal = new JPanel();
@@ -28,8 +31,16 @@ public class InterfazPrediccionClima extends JFrame {
 		pnlLeft.setLayout(lytLeft);
 
 		lblCalcularPrediccionTitulo = new JLabel("Calcular prediccion", JLabel.CENTER);
-		tfCalcularPrediccion = new JSpinner();
+		spDiaPrediccion = new JSpinner();
 		btnCalcularPrediccion = new JButton("Calcular");
+		btnCalcularPrediccion.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				double precipitacion = adminClima.calcularPrediccion((Integer) spDiaPrediccion.getValue());
+				String mensaje = "La precipitación para ese día es de "+precipitacion;
+				JOptionPane.showMessageDialog(null,mensaje);
+			}
+		});
 
 		pnlLeft.add(lblCalcularPrediccionTitulo);
 
@@ -40,7 +51,7 @@ public class InterfazPrediccionClima extends JFrame {
 		lblCalcularPrediccion = new JLabel("Dia");
 
 		pnlDia.add(lblCalcularPrediccion);
-		pnlDia.add(tfCalcularPrediccion);
+		pnlDia.add(spDiaPrediccion);
 
 		pnlLeft.add(pnlDia);
 		pnlLeft.add(btnCalcularPrediccion);
@@ -50,6 +61,12 @@ public class InterfazPrediccionClima extends JFrame {
 
 		btnMostrarGrafica = new JButton("Mostrar grafica");
 		lblMostrarGrafica = new JLabel("Grafica", JLabel.CENTER);
+		btnMostrarGrafica.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				adminClima.graficarResultados();
+			}
+		});
 
 		pnlRight.add(lblMostrarGrafica);
 		pnlRight.add(btnMostrarGrafica);
@@ -59,7 +76,9 @@ public class InterfazPrediccionClima extends JFrame {
 
 		add(pnlPrincipal, BorderLayout.CENTER);
 
+		setTitle("Predicción del Clima");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(300,300);
 		setVisible(true);
 	}
 
@@ -74,7 +93,7 @@ public class InterfazPrediccionClima extends JFrame {
 	JLabel lblMostrarGrafica;
 
 	JButton btnCalcularPrediccion;
-	JSpinner tfCalcularPrediccion;
+	JSpinner spDiaPrediccion;
 	JLabel lblCalcularPrediccion;
 	JLabel lblCalcularPrediccionTitulo;
 }
